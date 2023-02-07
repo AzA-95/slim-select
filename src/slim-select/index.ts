@@ -2,7 +2,7 @@ import Settings, { SettingsPartial } from './settings'
 import Render from './render'
 import Select from './select'
 import Store, { DataArray, DataArrayPartial, Option, OptionOptional } from './store'
-import { debounce, hasClassInTree, isEqual } from './helpers'
+import { debounce, hasClassInTree, isEqual, isVisualViewportSupported } from './helpers'
 
 export interface Config {
   select: string | Element
@@ -172,12 +172,20 @@ export default class SlimSelect {
     document.addEventListener('click', this.documentClick)
 
     // Add window resize listener to moveContent if window size changes
-    window.addEventListener('resize', this.windowResize, false)
+    if (isVisualViewportSupported()) {
+      window.visualViewport.addEventListener('resize', this.windowResize, false)
+    } else {
+      window.addEventListener('resize', this.windowResize, false)
+    }
 
     // If the user wants to show the content forcibly on a specific side,
     // there is no need to listen for scroll events
     if (this.settings.openPosition === 'auto') {
-      window.addEventListener('scroll', this.windowScroll, false)
+      if (isVisualViewportSupported()) {
+        window.visualViewport.addEventListener('scroll', this.windowScroll, false)
+      } else {
+        window.addEventListener('scroll', this.windowScroll, false)
+      }
     }
 
     // Add window visibility change listener to closeContent if window is hidden
@@ -435,9 +443,19 @@ export default class SlimSelect {
   public destroy(): void {
     // Remove all event listeners
     document.removeEventListener('click', this.documentClick)
-    window.removeEventListener('resize', this.windowResize, false)
+    
+    if (isVisualViewportSupported()) {
+      window.visualViewport.removeEventListener('resize', this.windowResize, false)
+    } else {
+      window.removeEventListener('resize', this.windowResize, false)
+    }
+
     if (this.settings.openPosition === 'auto') {
-      window.removeEventListener('scroll', this.windowScroll, false)
+      if (isVisualViewportSupported()) {
+        window.visualViewport.removeEventListener('scroll', this.windowScroll, false)
+      } else {
+        window.removeEventListener('scroll', this.windowScroll, false)
+      }
     }
     document.removeEventListener('visibilitychange', this.windowVisibilityChange)
 

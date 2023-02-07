@@ -1,4 +1,4 @@
-import { debounce } from './helpers'
+import { debounce, isVisualViewportSupported } from './helpers'
 import Settings from './settings'
 import Store, { DataArray, Optgroup, Option, OptionOptional } from './store'
 
@@ -1348,9 +1348,10 @@ export default class Render {
     const mainHeight = this.main.main.offsetHeight
     const mainRect = this.main.main.getBoundingClientRect()
     const contentHeight = this.content.main.offsetHeight
+    const viewportHeight = isVisualViewportSupported() ? window.visualViewport.height : window.innerHeight
 
     // From bottom of mainHeight figure out if content will fit below without going below the window
-    const spaceBelow = window.innerHeight - (mainRect.top + mainHeight)
+    const spaceBelow = viewportHeight - (mainRect.top + mainHeight)
 
     // If space below is less than content height
     if (spaceBelow <= contentHeight) {
