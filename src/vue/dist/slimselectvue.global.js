@@ -1194,7 +1194,8 @@ var SlimSelectVue = (function (vue) {
           const mainHeight = this.main.main.offsetHeight;
           const mainRect = this.main.main.getBoundingClientRect();
           const contentHeight = this.content.main.offsetHeight;
-          const spaceBelow = window.innerHeight - (mainRect.top + mainHeight);
+          const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+          const spaceBelow = viewportHeight - (mainRect.top + mainHeight);
           if (spaceBelow <= contentHeight) {
               if (mainRect.top > contentHeight) {
                   return 'up';
@@ -1601,9 +1602,19 @@ var SlimSelectVue = (function (vue) {
               this.selectEl.parentNode.insertBefore(this.render.main.main, this.selectEl.nextSibling);
           }
           document.addEventListener('click', this.documentClick);
-          window.addEventListener('resize', this.windowResize, false);
+          if (window.visualViewport) {
+              window.visualViewport.addEventListener('resize', this.windowResize, false);
+          }
+          else {
+              window.addEventListener('resize', this.windowResize, false);
+          }
           if (this.settings.openPosition === 'auto') {
-              window.addEventListener('scroll', this.windowScroll, false);
+              if (window.visualViewport) {
+                  window.visualViewport.addEventListener('scroll', this.windowScroll, false);
+              }
+              else {
+                  window.addEventListener('scroll', this.windowScroll, false);
+              }
           }
           document.addEventListener('visibilitychange', this.windowVisibilityChange);
           if (this.settings.disabled) {
@@ -1756,9 +1767,19 @@ var SlimSelectVue = (function (vue) {
       }
       destroy() {
           document.removeEventListener('click', this.documentClick);
-          window.removeEventListener('resize', this.windowResize, false);
+          if (window.visualViewport) {
+              window.visualViewport.removeEventListener('resize', this.windowResize, false);
+          }
+          else {
+              window.removeEventListener('resize', this.windowResize, false);
+          }
           if (this.settings.openPosition === 'auto') {
-              window.removeEventListener('scroll', this.windowScroll, false);
+              if (window.visualViewport) {
+                  window.visualViewport.removeEventListener('scroll', this.windowScroll, false);
+              }
+              else {
+                  window.removeEventListener('scroll', this.windowScroll, false);
+              }
           }
           document.removeEventListener('visibilitychange', this.windowVisibilityChange);
           this.store.setData([]);
